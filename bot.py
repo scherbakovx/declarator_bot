@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Updater, MessageHandler, Filters, CommandHandler, CallbackQueryHandler
 
-from utils import validate_request
-from network import make_request_for_search
+from utils import validate_request, build_menu
+from network import make_request_for_search, make_request_for_person
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -33,31 +34,22 @@ def text(bot, update):
         amount, result = make_request_for_search(update.message.text)
         if amount == 0 or amount > 25:
             bot.send_message(chat_id=update.message.chat_id,
-                            text=result,
-                            reply_markup=remove_special_keyboard)
+                             text=result,
+                             reply_markup=remove_special_keyboard)
         elif amount == 1:
             bot.send_message(chat_id=update.message.chat_id,
-                            text=result,
-                            reply_markup=remove_special_keyboard)
+                             text=result,
+                             reply_markup=remove_special_keyboard)
         else:
-            # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Code-snippets#build-a-menu-with-buttons
-            data = {
-                'user_id': update.message.chat_id,
-                'time': None # timezone now
-                'buttons': [
-                    {
-                        'button_text': 'office-position 1',
-                        'person_id': 1
-                    },
-                    {
-                        'button_text': 'office-position 2',
-                        'person_id': 2
-                    }
-                ]
-            }
-            custom_keyboard = [['top-left', 'top-right'], ['bottom-left', 'bottom-right']]
-            reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-            bot.send_message(chat_id=chat_id, text="Custom Keyboard Test", reply_markup=reply_markup)
+            button_list = []
+            for person in result:
+                button_list.append(InlineKeyboardButton(
+                    person['text'], callback_data=person['id']))
+
+            reply_markup = InlineKeyboardMarkup(
+                build_menu(button_list, n_cols=1))
+            bot.send_message(
+                chat_id=update.message.chat_id, text="Выберите человека:", reply_markup=reply_markup)
     else:
         bot.send_message(chat_id=update.message.chat_id,
                          text='Неверный формат запроса.',
@@ -66,5 +58,20 @@ def text(bot, update):
 
 text_handler = MessageHandler(Filters.text, text)
 dispatcher.add_handler(text_handler)
+
+
+def callback(bot, update):
+    remove_special_keyboard = ReplyKeyboardRemove()
+    person_id = int(update.callback_query.data)
+
+    amount, result = make_request_for_person(person_id)
+
+    bot.send_message(chat_id=update.callback_query.message.chat.id,
+                     text=result,
+                     reply_markup=remove_special_keyboard)
+
+
+callback_handler = CallbackQueryHandler(callback)
+dispatcher.add_handler(callback_handler)
 
 updater.start_polling()
