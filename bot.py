@@ -81,7 +81,7 @@ def text(bot, update):
         elif amount == 1:
             for message in result:
                 bot.send_message(chat_id=update.message.chat_id,
-                                 text=message.encode('utf-8'),
+                                 text=message,
                                  parse_mode=ParseMode.MARKDOWN,
                                  reply_markup=remove_special_keyboard)
         else:
@@ -113,9 +113,9 @@ def callback(bot, update):
 
     for message in result:
         bot.send_message(chat_id=update.callback_query.message.chat.id,
-                     text=message,
-                     parse_mode=ParseMode.MARKDOWN,
-                     reply_markup=remove_special_keyboard)
+                         text=message,
+                         parse_mode=ParseMode.MARKDOWN,
+                         reply_markup=remove_special_keyboard)
 
 
 callback_handler = CallbackQueryHandler(callback)
