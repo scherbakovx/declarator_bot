@@ -22,11 +22,11 @@ def parse_search_answer(data):
         data = json.loads(data)
 
     if isinstance(data, list):
-        return 0, "Неверный формат запроса."
+        return 0, "Неверный формат запроса. (2)"
     elif isinstance(data, dict):
         count = data['count']
         if count == 0:
-            return count, "Результатов не найдено."
+            return count, "Результатов не найдено. (1)"
         elif count == 1:
             result = data['results'][0]['id']
             return count, result
@@ -35,7 +35,7 @@ def parse_search_answer(data):
                 'id')} for person in data['results']]
             return count, result
         else:
-            return count, "Очень много."
+            return count, "Очень много. (3)"
     else:
         # привет
         return 0, "Что-то странное."
@@ -45,7 +45,7 @@ def get_office_position(person):
     information = person.get('sections', [])
     if information:
         last_information = information[0]
-        return "%s / %s" % (last_information.get('office'), last_information.get('position'))
+        return "%s / %s" % (last_information.get('position'), last_information.get('office'))
     return None
 
 
@@ -77,38 +77,43 @@ def parse_person_answer(data):
         data = json.loads(data)
 
     all_years = data['results']
-    result = ""
+    result = []
     if all_years:
         last_year = all_years[-1]
-        result += "%s\n%s\n" % (last_year['main']['office']
-                                ['post'], last_year['main']['office']['name'])
+        result.append("%s\n%s\n" % (last_year['main']['office']
+                                    ['post'], last_year['main']['office']['name']))
 
         incomes = last_year['incomes']
         if incomes:
             # maybe no comment
-            result += create_part_of_answer("Доход", incomes, "%s руб. (%s)")
+            result.append(create_part_of_answer(
+                "Доход", incomes, "%s руб. (%s)"))
 
         real_estates = last_year['real_estates']
         if real_estates:
-            result += create_part_of_answer("Недвижимое имущество",
-                                            real_estates, "%s, %s кв. м. (%s)")
+            result.append(create_part_of_answer("Недвижимое имущество",
+                                                real_estates, "%s, %s кв. м. (%s)"))
 
         vehicles = last_year['vehicles']
         if vehicles:    # need more information
-            result += create_part_of_answer(
-                "Транспортные средства", vehicles, "%s")
+            result.append(create_part_of_answer(
+                "Транспортные средства", vehicles, "%s"))
 
         savings = last_year['savings']
         if savings:
-            result += "\n*Счета*\n"
+            savings = "\n*Счета*\n"
             for saving in savings:
-                result += "%s\n" % saving
+                savings += "%s\n" % saving
+            result.append(savings)
+
+        # for i in range(len(result)):
+        #     result[i] = result[i].decode('utf-8')
 
         # spendings
         # stocks
 
     # split result
-    return result[:1000]
+    return result
 
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):

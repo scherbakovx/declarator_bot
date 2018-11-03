@@ -19,7 +19,7 @@ def make_request_for_search(query):
         else:
             return amount, result
     elif response.status_code == 400:
-        return 0, "Неверный формат запроса."
+        return 0, "Неверный формат запроса. (2)"
 
 
 def make_request_for_person(person_id):
@@ -28,6 +28,7 @@ def make_request_for_person(person_id):
     if response.status_code == 200:
         data = response.content
         result = parse_person_answer(data)
+        print(result)
         return 1, result
     elif response.status_code == 400:
-        return 0, "Неверный формат запроса."
+        return 0, "Неверный формат запроса. (2)"

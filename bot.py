@@ -49,11 +49,21 @@ def start(bot, update):
     Function for handling /start-command
     """
     bot.send_message(chat_id=update.message.chat_id,
-                     text="*написать возможности этого бота*")
+                     text="Написать возможности этого бота. (5)")
+
+
+def help(bot, update):
+    """
+    Function for handling /help-command
+    """
+    bot.send_message(chat_id=update.message.chat_id,
+                     text="Написать возможности этого бота. (5)")
 
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+help_handler = CommandHandler('help', help)
+dispatcher.add_handler(help_handler)
 
 
 @send_typing_action
@@ -69,10 +79,11 @@ def text(bot, update):
                              text=result,
                              reply_markup=remove_special_keyboard)
         elif amount == 1:
-            bot.send_message(chat_id=update.message.chat_id,
-                             text=result,
-                             parse_mode=ParseMode.MARKDOWN,
-                             reply_markup=remove_special_keyboard)
+            for message in result:
+                bot.send_message(chat_id=update.message.chat_id,
+                                 text=message.encode('utf-8'),
+                                 parse_mode=ParseMode.MARKDOWN,
+                                 reply_markup=remove_special_keyboard)
         else:
             button_list = []
             for person in result:
@@ -82,10 +93,10 @@ def text(bot, update):
             reply_markup = InlineKeyboardMarkup(
                 build_menu(button_list, n_cols=1))
             bot.send_message(
-                chat_id=update.message.chat_id, text="Выберите человека:", reply_markup=reply_markup)
+                chat_id=update.message.chat_id, text="Выберите человека: (4)", reply_markup=reply_markup)
     else:
         bot.send_message(chat_id=update.message.chat_id,
-                         text='Неверный формат запроса.',
+                         text='Неверный формат запроса. (2)',
                          reply_markup=remove_special_keyboard)
 
 
@@ -100,8 +111,9 @@ def callback(bot, update):
 
     amount, result = make_request_for_person(person_id)
 
-    bot.send_message(chat_id=update.callback_query.message.chat.id,
-                     text=result,
+    for message in result:
+        bot.send_message(chat_id=update.callback_query.message.chat.id,
+                     text=message,
                      parse_mode=ParseMode.MARKDOWN,
                      reply_markup=remove_special_keyboard)
 

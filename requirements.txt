@@ -12,6 +12,7 @@ cryptography==2.3.1       # via python-telegram-bot
 future==0.16.0            # via python-telegram-bot
 idna==2.7                 # via cryptography, requests
 pycparser==2.19           # via cffi
+pysocks==1.6.8
 python-telegram-bot==11.1.0
 requests==2.19.1
 six==1.11.0               # via cryptography
