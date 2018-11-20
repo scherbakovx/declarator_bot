@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
+from messages import no_results_message, too_many_results_message
+
 
 def validate_request(query):
     """
@@ -12,7 +14,7 @@ def validate_request(query):
     return False
 
 
-def parse_search_answer(data):
+def parse_search_answer(data, request_name):
     """
     Method check returned data from request.
     Return is amount of answers _, result _.
@@ -22,11 +24,11 @@ def parse_search_answer(data):
         data = json.loads(data)
 
     if isinstance(data, list):
-        return 0, "Неверный формат запроса. (2)"
+        return 0, "Неверный формат запроса."
     elif isinstance(data, dict):
         count = data['count']
         if count == 0:
-            return count, "Результатов не найдено. (1)"
+            return count, no_results_message % request_name
         elif count == 1:
             result = data['results'][0]['id']
             return count, result
@@ -35,10 +37,9 @@ def parse_search_answer(data):
                 'id')} for person in data['results']]
             return count, result
         else:
-            return count, "Очень много. (3)"
+            return count, too_many_results_message % request_name
     else:
-        # привет
-        return 0, "Что-то странное."
+        return 0, "Что-то пошло не так."
 
 
 def get_office_position(person):
@@ -106,13 +107,9 @@ def parse_person_answer(data):
                 savings += "%s\n" % saving
             result.append(savings)
 
-        # for i in range(len(result)):
-        #     result[i] = result[i].decode('utf-8')
-
         # spendings
         # stocks
 
-    # split result
     return result
 
 

@@ -7,6 +7,7 @@ from functools import wraps
 
 from utils import validate_request, build_menu
 from network import make_request_for_search, make_request_for_person
+from messages import start_help_message, one_result_message, many_results_message
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -49,7 +50,7 @@ def start(bot, update):
     Function for handling /start-command
     """
     bot.send_message(chat_id=update.message.chat_id,
-                     text="Написать возможности этого бота. (5)")
+                     text=start_help_message)
 
 
 def help(bot, update):
@@ -57,7 +58,7 @@ def help(bot, update):
     Function for handling /help-command
     """
     bot.send_message(chat_id=update.message.chat_id,
-                     text="Написать возможности этого бота. (5)")
+                     text=start_help_message)
 
 
 start_handler = CommandHandler('start', start)
@@ -79,6 +80,10 @@ def text(bot, update):
                              text=result,
                              reply_markup=remove_special_keyboard)
         elif amount == 1:
+            bot.send_message(chat_id=update.message.chat_id,
+                             text=one_result_message % update.message.text,
+                             parse_mode=ParseMode.MARKDOWN,
+                             reply_markup=remove_special_keyboard)
             for message in result:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=message,
@@ -93,10 +98,10 @@ def text(bot, update):
             reply_markup = InlineKeyboardMarkup(
                 build_menu(button_list, n_cols=1))
             bot.send_message(
-                chat_id=update.message.chat_id, text="Выберите человека: (4)", reply_markup=reply_markup)
+                chat_id=update.message.chat_id, text=many_results_message % update.message.text, reply_markup=reply_markup)
     else:
         bot.send_message(chat_id=update.message.chat_id,
-                         text='Неверный формат запроса. (2)',
+                         text='Неверный формат запроса.',
                          reply_markup=remove_special_keyboard)
 
 
