@@ -12,17 +12,17 @@ from messages import start_help_message, one_result_message, many_results_messag
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-TOKEN = '606272084:AAEyMyKaioythxTGakMpUvO4YmnHUgbc0UU'
-REQUEST_KWARGS = {
-    'proxy_url': 'socks5://holdtherope.ru:1080',
-    # # Optional, if you need authentication:
-    'urllib3_proxy_kwargs': {
-        'username': 'proxy-user',
-        'password': 'xo2Qa6Pgxhq6Fu6',
-    }
-}
+TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
+# REQUEST_KWARGS = {
+#     'proxy_url': 'socks5://holdtherope.ru:1080',
+#     # # Optional, if you need authentication:
+#     'urllib3_proxy_kwargs': {
+#         'username': 'proxy-user',
+#         'password': 'xo2Qa6Pgxhq6Fu6',
+#     }
+# }
 
-updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
+updater = Updater(TOKEN) # , request_kwargs=REQUEST_KWARGS
 dispatcher = updater.dispatcher
 
 
