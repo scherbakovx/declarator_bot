@@ -13,16 +13,17 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
-# REQUEST_KWARGS = {
-#     'proxy_url': 'socks5://holdtherope.ru:1080',
-#     # # Optional, if you need authentication:
-#     'urllib3_proxy_kwargs': {
-#         'username': 'proxy-user',
-#         'password': 'xo2Qa6Pgxhq6Fu6',
-#     }
-# }
+REQUEST_KWARGS = {
+    'proxy_url': 'socks5://holdtherope.ru:1080',
+    # # Optional, if you need authentication:
+    'urllib3_proxy_kwargs': {
+        'username': 'proxy-user',
+        'password': 'xo2Qa6Pgxhq6Fu6',
+    }
+}
 
-updater = Updater(TOKEN) # , request_kwargs=REQUEST_KWARGS
+updater = Updater(TOKEN)
+# updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
 dispatcher = updater.dispatcher
 
 
@@ -74,15 +75,17 @@ def text(bot, update):
     """
     remove_special_keyboard = ReplyKeyboardRemove()
     if validate_request(update.message.text):
-        amount, result = make_request_for_search(update.message.text)
+        amount, result, year, id_ = make_request_for_search(
+            update.message.text)
         if amount == 0 or amount > 25:
             bot.send_message(chat_id=update.message.chat_id,
                              text=result,
                              reply_markup=remove_special_keyboard)
         elif amount == 1:
             bot.send_message(chat_id=update.message.chat_id,
-                             text=one_result_message % update.message.text,
-                             parse_mode=ParseMode.MARKDOWN,
+                             text=one_result_message % (
+                                 'https://declarator.org/person/%s/' % id_, update.message.text, year),
+                             parse_mode=ParseMode.HTML,
                              reply_markup=remove_special_keyboard)
             for message in result:
                 bot.send_message(chat_id=update.message.chat_id,

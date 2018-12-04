@@ -81,6 +81,7 @@ def parse_person_answer(data):
     result = []
     if all_years:
         last_year = all_years[-1]
+        year = last_year.get('main', {}).get('year', '?')
         result.append("%s\n%s\n" % (last_year['main']['office']
                                     ['post'], last_year['main']['office']['name']))
 
@@ -110,7 +111,7 @@ def parse_person_answer(data):
         # spendings
         # stocks
 
-    return result
+    return result, year
 
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):

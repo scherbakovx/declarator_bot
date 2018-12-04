@@ -3,7 +3,7 @@ many_results_message = """
 """
 
 one_result_message = """
-Вот что мы нашли по вашему запросу '%s':
+Вот что мы нашли по вашему запросу <a href='%s'>'%s'</a> (данные за %s год):
 """
 
 start_help_message = """
