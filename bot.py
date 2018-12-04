@@ -12,8 +12,8 @@ from messages import start_help_message, one_result_message, many_results_messag
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
-TOKEN = '787441413:AAHsiHBwqivHnV6-5aMwbqeVRWMz4qlm6Aw'
+TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
+# TOKEN = '787441413:AAHsiHBwqivHnV6-5aMwbqeVRWMz4qlm6Aw'
 REQUEST_KWARGS = {
     'proxy_url': 'socks5://holdtherope.ru:1080',
     # # Optional, if you need authentication:
@@ -23,8 +23,8 @@ REQUEST_KWARGS = {
     }
 }
 
-# updater = Updater(TOKEN)
-updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
+updater = Updater(TOKEN)
+# updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
 dispatcher = updater.dispatcher
 
 
