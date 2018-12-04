@@ -12,7 +12,8 @@ from messages import start_help_message, one_result_message, many_results_messag
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
+# TOKEN = '706752899:AAGcvpf9-b02ryEUPknCKbJGkaxqn_NhKgQ'
+TOKEN = '787441413:AAHsiHBwqivHnV6-5aMwbqeVRWMz4qlm6Aw'
 REQUEST_KWARGS = {
     'proxy_url': 'socks5://holdtherope.ru:1080',
     # # Optional, if you need authentication:
@@ -22,8 +23,8 @@ REQUEST_KWARGS = {
     }
 }
 
-updater = Updater(TOKEN)
-# updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
+# updater = Updater(TOKEN)
+updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS)
 dispatcher = updater.dispatcher
 
 
@@ -117,8 +118,15 @@ def callback(bot, update):
     remove_special_keyboard = ReplyKeyboardRemove()
     person_id = int(update.callback_query.data)
 
-    amount, result = make_request_for_person(person_id)
+    amount, result, year = make_request_for_person(person_id)
 
+    print(update)
+
+    bot.send_message(chat_id=update.callback_query.message.chat.id,
+                     text=one_result_message % (
+                         'https://declarator.org/person/%s/' % person_id, update.callback_query.message.text.split("'")[1], year),
+                     parse_mode=ParseMode.HTML,
+                     reply_markup=remove_special_keyboard)
     for message in result:
         bot.send_message(chat_id=update.callback_query.message.chat.id,
                          text=message,
