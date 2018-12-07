@@ -76,7 +76,7 @@ def text(bot, update):
     """
     remove_special_keyboard = ReplyKeyboardRemove()
     if validate_request(update.message.text):
-        amount, result, year, id_ = make_request_for_search(
+        amount, result, name, year, id_ = make_request_for_search(
             update.message.text)
         if amount == 0 or amount > 25:
             bot.send_message(chat_id=update.message.chat_id,
@@ -85,7 +85,7 @@ def text(bot, update):
         elif amount == 1:
             bot.send_message(chat_id=update.message.chat_id,
                              text=one_result_message % (
-                                 'https://declarator.org/person/%s/' % id_, update.message.text, year),
+                                 'https://declarator.org/person/%s/' % id_, name, year),
                              parse_mode=ParseMode.HTML,
                              reply_markup=remove_special_keyboard)
             for message in result:
@@ -118,13 +118,11 @@ def callback(bot, update):
     remove_special_keyboard = ReplyKeyboardRemove()
     person_id = int(update.callback_query.data)
 
-    amount, result, year = make_request_for_person(person_id)
-
-    print(update)
+    amount, result, name, year = make_request_for_person(person_id)
 
     bot.send_message(chat_id=update.callback_query.message.chat.id,
                      text=one_result_message % (
-                         'https://declarator.org/person/%s/' % person_id, update.callback_query.message.text.split("'")[1], year),
+                         'https://declarator.org/person/%s/' % person_id, name, year),
                      parse_mode=ParseMode.HTML,
                      reply_markup=remove_special_keyboard)
     for message in result:

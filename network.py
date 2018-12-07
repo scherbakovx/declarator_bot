@@ -15,12 +15,12 @@ def make_request_for_search(query):
         data = response.content
         amount, result = parse_search_answer(data, query)
         if amount == 1:
-            amount, data, year = make_request_for_person(result)
-            return amount, data, year, result
+            amount, data, name, year = make_request_for_person(result)
+            return amount, data, name, year, result
         else:
-            return amount, result, None, None
+            return amount, result, None, None, None
     elif response.status_code == 400:
-        return 0, "Неверный формат запроса.", None, None
+        return 0, "Неверный формат запроса.", None, None, None
 
 
 def make_request_for_person(person_id):
@@ -28,7 +28,17 @@ def make_request_for_person(person_id):
     response = requests.get(BASE_URL + method_url % person_id)
     if response.status_code == 200:
         data = response.content
-        result, year = parse_person_answer(data)
-        return 1, result, year
+        if isinstance(data, bytes):
+            data = data.decode('utf8').replace("'", '"')
+            data = json.loads(data)
+        while data.get('next'):
+            response = requests.get(data.get('next'))
+            if response.status_code == 200:
+                data = response.content
+                if isinstance(data, bytes):
+                    data = data.decode('utf8').replace("'", '"')
+                    data = json.loads(data)
+        result, name, year = parse_person_answer(data)
+        return 1, result, name, year
     elif response.status_code == 400:
-        return 0, "Неверный формат запроса.", None
+        return 0, "Неверный формат запроса.", None, None

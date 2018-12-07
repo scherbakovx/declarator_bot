@@ -73,15 +73,18 @@ def create_part_of_answer(field_name, data, template):
 
 
 def parse_person_answer(data):
-    if isinstance(data, bytes):
-        data = data.decode('utf8').replace("'", '"')
-        data = json.loads(data)
+    # if isinstance(data, bytes):
+    #     data = data.decode('utf8').replace("'", '"')
+    #     data = json.loads(data)
 
     all_years = data['results']
     result = []
     if all_years:
+        # all_years = sorted(all_years, key=lambda last_year: last_year.get(
+        #     'main', {}).get('year', 0), reverse=True)
         last_year = all_years[-1]
-        year = last_year.get('main', {}).get('year', '?')
+        year = last_year.get('main', {}).get('year', 0)
+        name = last_year.get('main', {}).get('person', {}).get('name', None)
         result.append("%s\n%s\n" % (last_year['main']['office']
                                     ['post'], last_year['main']['office']['name']))
 
@@ -111,7 +114,7 @@ def parse_person_answer(data):
         # spendings
         # stocks
 
-    return result, year
+    return result, name, year
 
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
