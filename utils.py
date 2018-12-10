@@ -52,7 +52,12 @@ def get_office_position(person):
 
 def get_templated_string(field_name, obj, template):
     if field_name == 'Транспортные средства':
-        return template % (obj['type']['name'])
+        if template == '%s':
+            return template % (obj['type']['name'])
+        else:
+            name = obj.get('brand').get('name') if obj.get(
+                'brand') else obj.get('type').get('name')
+            return template % (obj.get('type', {}).get('name'), obj.get('brand_name'), name)
     elif field_name == 'Недвижимое имущество':
         return template % (obj['type']['name'], obj['square'], obj.get('own_type', {}).get('name', ''))
     elif field_name == 'Доход':
@@ -61,8 +66,16 @@ def get_templated_string(field_name, obj, template):
 
 
 def create_part_of_answer(field_name, data, template):
+    from network import make_request_for_car
     result = "\n*%s*\n" % field_name
     for obj in data:
+        if field_name == 'Транспортные средства':
+            field_dict = obj.get('brand') or obj.get('type')
+            if field_dict:
+                name = make_request_for_car(field_dict.get('id'))
+                if name:
+                    obj['brand_name'] = name
+                    template = "%s %s %s"
         if obj['relative'] is None:
             result += "%s\n" % get_templated_string(
                 field_name, obj, template)
@@ -92,15 +105,15 @@ def parse_person_answer(data):
         if incomes:
             # maybe no comment
             result.append(create_part_of_answer(
-                "Доход", incomes, "%s руб. (%s)"))
+                "Доход", incomes, "%s руб. (%s)").replace(' ()', ''))
 
         real_estates = last_year['real_estates']
         if real_estates:
             result.append(create_part_of_answer("Недвижимое имущество",
-                                                real_estates, "%s, %s кв. м. (%s)"))
+                                                real_estates, "%s, %s кв. м. (%s)").replace(' ()', ''))
 
         vehicles = last_year['vehicles']
-        if vehicles:    # need more information
+        if vehicles:
             result.append(create_part_of_answer(
                 "Транспортные средства", vehicles, "%s"))
 
